@@ -354,7 +354,6 @@ public class StatusBar extends JPanel
 
 			int caretPosition = textArea.getCaretPosition();
 			int currLine = textArea.getCaretLine();
-			System.out.println(textArea);
 
 			// there must be a better way of fixing this...
 			// the problem is that this method can sometimes
