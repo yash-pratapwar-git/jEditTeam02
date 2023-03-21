@@ -64,8 +64,8 @@ public class StatusBar extends JPanel
 		super(new BorderLayout());
 		setName("StatusBar");
 		setBorder(new CompoundBorder(new EmptyBorder(4,0,0,
-			(OperatingSystem.isMacOS() ? 18 : 0)),
-			UIManager.getBorder("TextField.border")));
+				(OperatingSystem.isMacOS() ? 18 : 0)),
+				UIManager.getBorder("TextField.border")));
 
 		this.view = view;
 
@@ -203,20 +203,20 @@ public class StatusBar extends JPanel
 				if(requestCount == 0)
 				{
 					setMessageAndClear(jEdit.getProperty(
-						"view.status.io.done"));
+							"view.status.io.done"));
 					currentMessageIsIO = true;
 				}
 				else if(requestCount == 1)
 				{
 					setMessage(jEdit.getProperty(
-						"view.status.io-1"));
+							"view.status.io-1"));
 					currentMessageIsIO = true;
 				}
 				else
 				{
 					Object[] args = {requestCount};
 					setMessage(jEdit.getProperty(
-						"view.status.io",args));
+							"view.status.io",args));
 					currentMessageIsIO = true;
 				}
 			}
@@ -227,18 +227,18 @@ public class StatusBar extends JPanel
 		{
 			SwingUtilities.invokeLater(statusLineIo);
 		} //}}}
-	
+
 		//{{{ running() method
 		public void running(Task task)
 		{
 		} //}}}
-	
+
 		//{{{ done() method
 		public void done(Task task)
 		{
 			SwingUtilities.invokeLater(statusLineIo);
 		} //}}}
-	
+
 		//{{{ statusUpdate() method
 		public void statusUpdated(Task task)
 		{
@@ -343,8 +343,8 @@ public class StatusBar extends JPanel
 			Buffer buffer = view.getBuffer();
 
 			if(!buffer.isLoaded() ||
-				/* can happen when switching buffers sometimes */
-				buffer != view.getTextArea().getBuffer())
+					/* can happen when switching buffers sometimes */
+					buffer != view.getTextArea().getBuffer())
 			{
 				caretStatus.setText(" ");
 				return;
@@ -354,6 +354,7 @@ public class StatusBar extends JPanel
 
 			int caretPosition = textArea.getCaretPosition();
 			int currLine = textArea.getCaretLine();
+			System.out.println(textArea);
 
 			// there must be a better way of fixing this...
 			// the problem is that this method can sometimes
@@ -365,15 +366,22 @@ public class StatusBar extends JPanel
 
 			int start = textArea.getLineStartOffset(currLine);
 			int dot = caretPosition - start;
-
 			if(dot < 0)
 				return;
 
 			int bufferLength = buffer.getLength();
 
+			// getting text till caret position to calculate word offset
+			String text = textArea.getView().getBuffer().getText(0, caretPosition);
+			int wordOffset = text.trim().split("\\s+").length;
+
+			// getting entire text present in file to calculate total number of words
+			String fileText = textArea.getText();
+			int totalWordCount = fileText.trim().split("\\s+").length;
+
 			buffer.getText(start,dot,seg);
 			int virtualPosition = StandardUtilities.getVirtualWidth(seg,
-				buffer.getTabSize());
+					buffer.getTabSize());
 			// for GC
 			seg.array = null;
 			seg.count = 0;
@@ -388,7 +396,7 @@ public class StatusBar extends JPanel
 				buf.append(dot + 1);
 			}
 			if (jEdit.getBooleanProperty("view.status.show-caret-virtual", true) &&
-				virtualPosition != dot)
+					virtualPosition != dot)
 			{
 				buf.append('-');
 				buf.append(virtualPosition + 1);
@@ -398,12 +406,17 @@ public class StatusBar extends JPanel
 				buf.append(' ');
 			}
 			if (jEdit.getBooleanProperty("view.status.show-caret-offset", true) &&
-				jEdit.getBooleanProperty("view.status.show-caret-bufferlength", true))
+					jEdit.getBooleanProperty("view.status.show-caret-bufferlength", true))
 			{
 				buf.append('(');
 				buf.append(caretPosition);
 				buf.append('/');
 				buf.append(bufferLength);
+				buf.append(')');
+				buf.append('(');
+				buf.append(wordOffset);
+				buf.append('/');
+				buf.append(totalWordCount);
 				buf.append(')');
 			}
 			else if (jEdit.getBooleanProperty("view.status.show-caret-offset", true))
@@ -505,7 +518,7 @@ public class StatusBar extends JPanel
 	private Widget _getWidget(String name)
 	{
 		StatusWidgetFactory widgetFactory =
-		(StatusWidgetFactory) ServiceManager.getService("org.gjt.sp.jedit.gui.statusbar.StatusWidgetFactory", name);
+				(StatusWidgetFactory) ServiceManager.getService("org.gjt.sp.jedit.gui.statusbar.StatusWidgetFactory", name);
 		if (widgetFactory == null)
 		{
 			return null;
